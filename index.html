@@ -1,23 +1,211 @@
-<!-- Add this inside <body> in your index.html -->
-<div class="container">
-  <h1>
-    <span style="vertical-align:middle">&#9881;</span>
-    Weight Conversion Calculator
-  </h1>
-  <label for="conversionChoice">Choose a conversion:</label>
-  <select id="conversionChoice">
-    <option value="">-- Select --</option>
-    <option value="kgToLbs">Kilograms to Pounds</option>
-    <option value="lbsToKg">Pounds to Kilograms</option>
-  </select>
-  <label id="weightLabel" for="weightInput" style="display:none;"></label>
-  <input type="number" id="weightInput" step="any" min="0" style="display:none;" placeholder="e.g. 72.5"/>
-  <div id="errorMsg" style="color:#b00020;font-weight:600;font-size:.95em;margin-top:.5em;"></div>
-  <button id="convertBtn" disabled>Convert</button>
-  <button id="resetBtn" style="display:none;background:#E0E0E0;color:#333;margin-top:.5em;">Reset</button>
-  <div id="result" role="alert" aria-live="polite"></div>
-  <div id="formula" style="font-size:0.95em;color:#666;margin-top:.75em;"></div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weight Conversion Calculator</title>
+  <meta name="description" content="Modern Weight Conversion Calculator - Kilograms to Pounds and vice versa in a beautiful, accessible layout.">
+  <meta name="author" content="Your Name or Github Username" />
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .container {
+      background: #fff;
+      padding: 2.5em 2em 3em;
+      border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(74,144,226,0.07), 0 1.5px 8px 1px rgba(0,0,0,0.08);
+      min-width: 320px;
+      max-width: 400px;
+      width: 100%;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    h1 {
+      text-align: center;
+      color: #2874A6;
+      font-size: 1.8em;
+      margin-bottom: 1.2em;
+      letter-spacing: 0.5px;
+    }
+    h1 .emoji {
+      vertical-align:middle;
+      margin-right:0.25em;
+    }
+    label {
+      font-weight: 600;
+      color: #444;
+      margin-top: 0.8em;
+      margin-bottom: 0.25em;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 0.62em 1em;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1.8px solid #cfd8dc;
+      margin-bottom: 0.50em;
+      transition: border-color 0.2s;
+      background: #fafbfc;
+      color: #212121;
+    }
+    select:focus, input[type="number"]:focus {
+      border-color: #2874A6;
+      outline: none;
+      background: #fff;
+    }
+    button {
+      width: 100%;
+      font-weight: 700;
+      font-size: 1.12em;
+      padding: 0.7em 0;
+      border-radius: 8px;
+      margin-top: 0.8em;
+      border: none;
+      background: #2874A6;
+      color: white;
+      box-shadow: 0 4px 12px rgba(40,116,166, 0.16);
+      transition: background-color 0.2s;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+    }
+    button:disabled {
+      background: #bbc3cb;
+      color: #eee;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    button:not(:disabled):hover {
+      background: #145077;
+    }
+    #resetBtn {
+      background: #dedfe2;
+      color: #374151;
+      margin-top: 0.4em;
+      box-shadow: none;
+    }
+    #resetBtn:hover {
+      background: #bbc3cb;
+      color: #2874A6;
+    }
+    #result {
+      margin-top: 1.45em;
+      font-weight: 700;
+      font-size: 1.20em;
+      color: #2874A6;
+      min-height: 1.5em;
+      text-align: center;
+      letter-spacing: 0.025em;
+    }
+    #errorMsg {
+      color: #b00020;
+      font-weight: 600;
+      font-size: .98em;
+      margin-top: .32em;
+      min-height: 1.2em;
+      text-align: center;
+    }
+    #formula {
+      font-size: 1em;
+      color:#566573;
+      text-align: center;
+      margin-top: 0.7em;
+      font-style: italic;
+      min-height: 1.2em;
+    }
+    pre.code-block {
+      background: #23272f;
+      color: #ecf0f1;
+      padding: 1em 1.5em;
+      border-radius: 10px;
+      margin-top: 3em;
+      margin-bottom: 1.5em;
+      overflow-x: auto;
+      font-size: 1em;
+      box-shadow: 0 2px 8px rgba(44,62,80,.11);
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 480px) {
+      .container {
+        min-width: unset;
+        padding: 1.1em 0.35em 2em;
+        border-radius: 7.5px;
+      }
+      pre.code-block {
+        padding: 0.4em 0.7em;
+        font-size: 0.98em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1><span class="emoji">&#9881;</span>Weight Conversion Calculator</h1>
+
+    <label for="conversionChoice">Choose a conversion type:</label>
+    <select id="conversionChoice">
+      <option value="">-- Select --</option>
+      <option value="kgToLbs">Kilograms to Pounds</option>
+      <option value="lbsToKg">Pounds to Kilograms</option>
+    </select>
+    <label id="weightLabel" for="weightInput" style="display:none;"></label>
+    <input type="number" id="weightInput" step="any" min="0" style="display:none;" placeholder="" autocomplete="off" />
+    <div id="errorMsg"></div>
+    <button id="convertBtn" disabled>Convert</button>
+    <button id="resetBtn" style="display:none; margin-bottom:0.12em;">Reset</button>
+    <div id="result" role="alert" aria-live="polite"></div>
+    <div id="formula"></div>
+  </div>
+
+  <pre class="code-block"><code>
+#include &lt;stdio.h&gt;
+
+int main(){   
+    // weight converter program
+    int choice = 0;
+    float pounds = 0.0f;
+    float kilograms = 0.0f;
+
+    printf("Weight Conversion Calculator.\n");
+    printf("1. Kilograms to Pounds.\n");
+    printf("2. Pounds to Kilograms.\n");
+    printf("Enter your choice (1 or 2): \n");
+    scanf("%d", &choice);
+
+    if (choice == 1){
+        printf("Enter the weight in Kilograms: \n");
+        scanf("%f", &kilograms);
+        pounds = kilograms * 2.20462;
+        printf("%2.2f kilograms is equal to %.2f pounds.\n", kilograms, pounds);
+    }
+    else if (choice == 2 ){
+        printf("Enter the weight in Pounds: \n");
+        scanf("%f", &pounds);
+        kilograms = pounds / 2.20462;
+        printf("%2.2f pounds is equal to %.2f kilograms.\n", pounds, kilograms);
+    }
+    else {
+        printf("Invalid choice! Please enter 1 or 2\n");
+    }
+    return 0;
+}
+  </code></pre>
 
 <script>
 const conversionChoice = document.getElementById('conversionChoice');
@@ -92,4 +280,12 @@ function doConversion() {
 
 convertBtn.addEventListener('click', doConversion);
 weightInput.addEventListener('keydown', (e) => { if(e.key === "Enter") doConversion(); });
+weightInput.addEventListener('input', () => {
+  errorMsg.textContent = "";
+  resultDiv.textContent = "";
+  formulaDiv.textContent = "";
+});
+
 </script>
+</body>
+</html>
