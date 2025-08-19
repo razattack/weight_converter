@@ -1,33 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Weight Conversion Calculator</title>
-<style>
-  /* Reset some default spacing */
-  * {
-    box-sizing: border-box;
-  }
+<!-- Add this inside <body> in your index.html -->
+<div class="container">
+  <h1>
+    <span style="vertical-align:middle">&#9881;</span>
+    Weight Conversion Calculator
+  </h1>
+  <label for="conversionChoice">Choose a conversion:</label>
+  <select id="conversionChoice">
+    <option value="">-- Select --</option>
+    <option value="kgToLbs">Kilograms to Pounds</option>
+    <option value="lbsToKg">Pounds to Kilograms</option>
+  </select>
+  <label id="weightLabel" for="weightInput" style="display:none;"></label>
+  <input type="number" id="weightInput" step="any" min="0" style="display:none;" placeholder="e.g. 72.5"/>
+  <div id="errorMsg" style="color:#b00020;font-weight:600;font-size:.95em;margin-top:.5em;"></div>
+  <button id="convertBtn" disabled>Convert</button>
+  <button id="resetBtn" style="display:none;background:#E0E0E0;color:#333;margin-top:.5em;">Reset</button>
+  <div id="result" role="alert" aria-live="polite"></div>
+  <div id="formula" style="font-size:0.95em;color:#666;margin-top:.75em;"></div>
+</div>
 
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f4f8;
-    margin: 0;
-    padding: 2em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
+<script>
+const conversionChoice = document.getElementById('conversionChoice');
+const weightInput = document.getElementById('weightInput');
+const weightLabel = document.getElementById('weightLabel');
+const convertBtn = document.getElementById('convertBtn');
+const resultDiv = document.getElementById('result');
+const errorMsg = document.getElementById('errorMsg');
+const resetBtn = document.getElementById('resetBtn');
+const formulaDiv = document.getElementById('formula');
 
-  .container {
-    background: white;
-    max-width: 400px;
-    width: 100%;
-    padding: 2.5em 2em 3em;
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  }
+function resetForm() {
+  conversionChoice.value = "";
+  weightInput.value = "";
+  weightInput.style.display = "none";
+  weightLabel.style.display = "none";
+  convertBtn.disabled = true;
+  resultDiv.textContent = "";
+  errorMsg.textContent = "";
+  resetBtn.style.display = "none";
+  formulaDiv.textContent = "";
+}
 
-  h1 {
+resetBtn.addEventListener('click', resetForm);
+
+conversionChoice.addEventListener('change', () => {
+  resetBtn.style.display = "block";
+  resultDiv.textContent = '';
+  errorMsg.textContent = '';
+  formulaDiv.textContent = '';
+  if (conversionChoice.value === 'kgToLbs') {
+    weightLabel.textContent = 'Enter the weight in Kilograms:';
+    weightLabel.style.display = 'block';
+    weightInput.style.display = 'block';
+    convertBtn.disabled = false;
+    weightInput.placeholder = "e.g. 72.5";
+    weightInput.focus();
+  } else if (conversionChoice.value === 'lbsToKg') {
+    weightLabel.textContent = 'Enter the weight in Pounds:';
+    weightLabel.style.display = 'block';
+    weightInput.style.display = 'block';
+    convertBtn.disabled = false;
+    weightInput.placeholder = "e.g. 150";
+    weightInput.focus();
+  } else {
+    weightLabel.style.display = 'none';
+    weightInput.style.display = 'none';
+    convertBtn.disabled = true;
+    resetBtn.style.display = "none";
+  }
+});
+
+function doConversion() {
+  errorMsg.textContent = "";
+  resultDiv.textContent = "";
+  formulaDiv.textContent = "";
+  const value = parseFloat(weightInput.value);
+  if (isNaN(value) || value < 0) {
+    errorMsg.textContent = "Please enter a valid, non-negative number.";
+    return;
+  }
+  if (conversionChoice.value === 'kgToLbs') {
+    const pounds = value * 2.20462;
+    resultDiv.textContent = `${value.toFixed(2)} kg = ${pounds.toFixed(2)} lbs`;
+    formulaDiv.textContent = "Formula: pounds = kilograms × 2.20462";
+  } else if (conversionChoice.value === 'lbsToKg') {
+    const kilograms = value / 2.20462;
+    resultDiv.textContent = `${value.toFixed(2)} lbs = ${kilograms.toFixed(2)} kg`;
+    formulaDiv.textContent = "Formula: kilograms = pounds ÷ 2.20462";
+  }
+}
+
+convertBtn.addEventListener('click', doConversion);
+weightInput.addEventListener('keydown', (e) => { if(e.key === "Enter") doConversion(); });
+</script>
